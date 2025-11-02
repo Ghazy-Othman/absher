@@ -1,0 +1,157 @@
+@customer_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTkyLjE2OC4xLjEzOjgwMDAvYXBpL3YxL3VzZXJzL2F1dGgvbG9naW4iLCJpYXQiOjE3NTQ3MzkxOTMsImV4cCI6MTc1NDgyNTU5MywibmJmIjoxNzU0NzM5MTkzLCJqdGkiOiI1TkZydWNUZVRCUkU4ZTk5Iiwic3ViIjoiMSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJpZCI6MSwiZW1haWwiOiJjdXN0b21lckBnbWFpbC5jb20ifQ.xt2sKqdEhYZvTcBP_tiv9hkCYTKYc5LS1DOdoQxsxzQ
+@vendor_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL3YxL3VzZXJzL2F1dGgvbG9naW4iLCJpYXQiOjE3NTM4ODQ4OTgsImV4cCI6MTc1Mzk3MTI5OCwibmJmIjoxNzUzODg0ODk4LCJqdGkiOiJlMkRUbWtyaHdJNnR2T3hQIiwic3ViIjoiMiIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJpZCI6MiwiZW1haWwiOiJ2ZW5kb3IxQGFwcC5jb20ifQ.idEx3bY30HR7Dhj86gEANn7xwcW9zJy8B2BI0TRM0-k
+@delivery_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL3YxL3VzZXJzL2F1dGgvbG9naW4iLCJpYXQiOjE3NTM4ODQ4NTEsImV4cCI6MTc1Mzk3MTI1MSwibmJmIjoxNzUzODg0ODUxLCJqdGkiOiJkRGdlU3hrUVVQODRnOXJOIiwic3ViIjoiNCIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJpZCI6NCwiZW1haWwiOiJkZWxpdmVyeUBhcHAuY29tIn0.2KI3NCgEo-7jSAiy0I2UzGNQ5fMsagKV1wsHEJf3WVY
+
+# ===================================================================================
+# ===================================================================================
+# ===================================================================================
+
+### Login ✅
+POST http://192.168.1.13:8000/api/v1/users/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "customer@gmail.com",
+  "password": "customer"
+}
+
+# ===================================================================================
+# ===================================================================================
+# ===================================================================================
+
+### Vendor: Create Product ✅
+POST http://127.0.0.1:8000/api/v1/products
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{vendor_token}}
+
+{
+  "name": "Product X",
+  "price": 19.99,
+  "details": "A new product"
+}
+
+# ===================================================================================
+# ===================================================================================
+# ===================================================================================
+
+
+### Customer: Add Item to Cart ✅
+POST http://127.0.0.1:8000/api/v1/carts/items
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{customer_token}}
+
+{
+  "product_id" : 1 ,
+  "quantity" : 5
+}
+
+
+@item_id=3
+### Customer : Update Item in Cart ✅
+PUT http://127.0.0.1:8000/api/v1/carts/items/{{item_id}}
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{customer_token}}
+
+{  
+  "quantity": 3
+}
+
+@item_id_to_delete=1
+### Customer : Delete Item from Cart ✅
+DELETE http://127.0.0.1:8000/api/v1/carts/items/{{item_id_to_delete}}
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{customer_token}}
+
+
+# ===================================================================================
+# ===================================================================================
+# ===================================================================================
+
+@cart_id=2
+### Customer: Checkout ✅
+POST http://192.168.1.13:8000/api/v1/carts/{{cart_id}}/checkout
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{customer_token}}
+
+{
+  "delivery_address": "Some random address"
+}
+
+
+### Customer: Cancel Order ✅
+PATCH http://127.0.0.1:8000/api/v1/orders/cancel
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{customer_token}}
+
+{
+  "order_id": 2
+}
+
+
+@order_id=1
+### Vendor: Post Delivery Request ✅
+POST http://127.0.0.1:8000/api/v1/orders/{{order_id}}/publish
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{vendor_token}}
+
+
+# ===================================================================================
+# ===================================================================================
+# ===================================================================================
+
+
+### Delivery: Request to Deliver ✅
+POST http://127.0.0.1:8000/api/v1/delivery-requests
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{delivery_token}}
+
+{
+  "order_id": 1
+}
+
+@delivery_request_id=1
+### Vendor: Accept/Decline Delivery Request
+PATCH http://127.0.0.1:8000/api/v1/delivery-requests/{{delivery_request_id}}/status
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{vendor_token}}
+
+{
+  "status":"approved"
+}
+
+
+# ===================================================================================
+# ===================================================================================
+# ===================================================================================
+
+
+### Delivery: Pickup Order
+PATCH http://127.0.0.1:8000/api/v1/orders/pickup
+Authorization: Bearer {{delivery_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "order_id" : 1
+}
+
+
+### Delivery: Mark Delivered
+PATCH http://127.0.0.1:8000/api/v1/orders/deliver
+Authorization: Bearer {{delivery_token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "order_id" : 1
+}
